@@ -1,0 +1,40 @@
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    var IdleTimeout = Configuration["IdleTimeout:DefaultTime"];
+    int timeout = Convert.ToInt32(IdleTimeout);
+    if (timeout == 0)
+    {
+        timeout = 15;
+    }
+}
+
+@Html.Hidden("hdnSessionTimeOut", @timeout)
+
+<div class="modal fade" id="sessionTimeoutModal" tabindex="-1" role="dialog" aria-labelledby="sessionTimeoutTitle">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title h4 font-weight-600" id="sessionTimeoutTitle">Session Timeout</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                Your session is about to time out in <strong><span id="timerInterval" style="font-size: 20px;"></span></strong> seconds. Click continue to keep working.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn csbtn_dark" data-dismiss="modal">Continue</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/SessionTimeout.js" asp-append-version="true"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var timeout = $('#hdnSessionTimeOut').val();
+        SessionTimeout.StartSessionTimer(timeout, 2, '@Url.Action("Logout", "Login")');
+        SessionTimeout.BindModalHideEvent();
+    });
+</script>
